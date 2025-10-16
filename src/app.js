@@ -7,7 +7,21 @@ const path = require('path');
 dotenv.config();
 
 const app = express();
-app.use(cors());
+
+// CORS: allow specific origins and handle preflight (OPTIONS)
+const allowedOrigins = (process.env.CORS_ORIGINS || '')
+  .split(',')
+  .map(s => s.trim())
+  .filter(Boolean);
+const corsOptions = {
+  origin: allowedOrigins.length > 0 ? allowedOrigins : true, // true = reflect request origin
+  methods: ['GET','POST','PUT','PATCH','DELETE','OPTIONS'],
+  allowedHeaders: ['Content-Type','Authorization'],
+  credentials: false,
+};
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
+
 app.use(express.json());
 app.use(morgan('dev'));
 
